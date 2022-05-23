@@ -3,6 +3,7 @@ import time
 import threading
 from threading import Semaphore
 global in_light, out_light;
+sem = Semaphore()
 
 def setup():
     global in_light, out_light
@@ -18,18 +19,25 @@ def setup():
 
 def indoor_light():
     while True:
+        sem.acquire()
         in_on_off = str(input('Indoor light on/off? '))
         if in_on_off == "on":
             in_light_value = float(input('Indoor light intensity [0-100]: '))
             in_light.ChangeDutyCycle(in_light_value)
-
+        else:
+            in_light.ChangeDutyCycle(0)
+        sem.release()
 
 def outdoor_light():
     while True:
+        sem.acquire()
         out_on_off = str(input('Indoor light on/off? '))
         if out_on_off == "on":
-            out_light_value = float(input('Indoor light intensity [0-100]: '))
+            out_light_value = float(input('Outdoor light intensity [0-100]: '))
             out_light.ChangeDutyCycle(out_light_value)
+        else:
+            out_light.ChangeDutyCycle(0)
+        sem.release()
 
 
 def destroy():
