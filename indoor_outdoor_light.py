@@ -28,7 +28,7 @@ def indoor_light():
 
 def outdoor_light():
     while True:
-        out_on_off = str(input('Indoor light on/off? '))
+        out_on_off = str(input('Outdoor light on/off? '))
         if out_on_off == "on":
             out_light_value = float(input('Outdoor light intensity [0-100]: '))
             out_light.ChangeDutyCycle(out_light_value)
