@@ -62,7 +62,6 @@ def servomotor():
             sem.acquire()
             # Ask user for angle and turn servo to it
             angle = float(input('Enter angle between 0 & 180: '))
-            print("Esto es el angulo ", angle)
             servo.ChangeDutyCycle(2 + (angle / 18))
             time.sleep(0.5)
             servo.ChangeDutyCycle(0)
