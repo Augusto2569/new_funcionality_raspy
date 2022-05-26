@@ -19,6 +19,7 @@ def setup():
     # Start PWM running, with value of 0 (pulse off)
     in_light.start(0)
     out_light.start(0)
+    servo.start(0)
 
 
 def indoor_light():
