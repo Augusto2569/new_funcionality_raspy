@@ -2,9 +2,9 @@ import RPi.GPIO as GPIO
 import time
 import threading
 from threading import Semaphore
-global in_light, out_light, servo
+global in_light, out_light, servo, cont
 sem = Semaphore()
-
+cont = 0
 
 def setup():
     global in_light, out_light, servo
@@ -22,32 +22,50 @@ def setup():
 
 
 def indoor_light():
+    global cont
     while True:
-        in_on_off = str(input('Indoor light on/off? '))
-        if in_on_off == "on":
-            in_light_value = float(input('Indoor light intensity [0-100]: '))
-            in_light.ChangeDutyCycle(in_light_value)
-        else:
-            in_light.ChangeDutyCycle(0)
-
+        if cont == 0:
+            sem.acquire()
+            in_on_off = str(input('Indoor light on/off? '))
+            sem.release()
+            if in_on_off == "on":
+                sem.acquire()
+                in_light_value = float(input('Indoor light intensity [0-100]: '))
+                in_light.ChangeDutyCycle(in_light_value)
+                sem.release()
+            else:
+                in_light.ChangeDutyCycle(0)
+            cont += 1
 
 def outdoor_light():
+    global cont
     while True:
-        out_on_off = str(input('Outdoor light on/off? '))
-        if out_on_off == "on":
-            out_light_value = float(input('Outdoor light intensity [0-100]: '))
-            out_light.ChangeDutyCycle(out_light_value)
-        else:
-            out_light.ChangeDutyCycle(0)
+        if cont == 1:
+            sem.acquire()
+            out_on_off = str(input('Outdoor light on/off? '))
+            sem.release()
+            if out_on_off == "on":
+                sem.acquire()
+                out_light_value = float(input('Outdoor light intensity [0-100]: '))
+                out_light.ChangeDutyCycle(out_light_value)
+                sem.release()
+            else:
+                out_light.ChangeDutyCycle(0)
+            cont += 1
 
 
 def servomotor():
+    global cont
     while True:
-        # Ask user for angle and turn servo to it
-        angle = float(input('Enter angle between 0 & 180: '))
-        servo.ChangeDutyCycle(2 + (angle / 18))
-        time.sleep(0.5)
-        servo.ChangeDutyCycle(0)
+        if cont == 2:
+            sem.acquire()
+            # Ask user for angle and turn servo to it
+            angle = float(input('Enter angle between 0 & 180: '))
+            servo.ChangeDutyCycle(2 + (angle / 18))
+            time.sleep(0.5)
+            servo.ChangeDutyCycle(0)
+            sem.release()
+            cont = 0
 
 
 def destroy():
